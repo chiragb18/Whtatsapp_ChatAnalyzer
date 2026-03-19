@@ -19,22 +19,23 @@ const initializeWhatsApp = (io) => {
     
     client = new Client({
         authStrategy: new LocalAuth(),
+        webVersionCache: {
+            type: 'remote',
+            remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.3000.1015901307.html',
+        },
         puppeteer: {
             headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
                 '--disable-gpu',
-                '--disable-extensions',
-                '--dns-prefetch-disable', // Helpful for ERR_NAME_NOT_RESOLVED
-                '--ignore-certificate-errors',
-                '--disable-web-security'
+                '--no-zygote',
+                '--dns-prefetch-disable',
+                '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
             ],
-            protocolTimeout: 600000 // Increased to 10 minutes for slow connections
+            ignoreDefaultArgs: ['--enable-automation'],
+            protocolTimeout: 600000 
         }
     });
 
@@ -166,7 +167,11 @@ const startBackgroundSync = async () => {
         for (const chatData of cachedChats) {
             await Chat.findOneAndUpdate(
                 { id: chatData.id },
-                { ...chatData, lastSync: new Date() },
+                { 
+                    ...chatData, 
+                    lastSync: new Date(),
+                    lastSyncIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+                },
                 { upsert: true }
             ).catch(() => {});
         }

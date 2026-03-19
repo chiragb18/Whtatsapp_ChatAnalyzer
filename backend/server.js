@@ -48,8 +48,9 @@ initializeWhatsApp(io);
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, () => {
-  console.log(`====================================`);
+server.listen(PORT, '127.0.0.1', () => {
+  console.log('====================================');
   console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  console.log(`====================================`);
+  console.log('Listening on 127.0.0.1:5000');
+  console.log('====================================');
 });

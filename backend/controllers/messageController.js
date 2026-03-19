@@ -32,9 +32,20 @@ const Object = {
         return res.status(200).json({ success: true, message: 'No new messages to save', count: 0 });
       }
 
+      // Format/Map messages to include IST timestamp string
+      const formattedInput = validMessages.map(m => {
+          const date = m.timestamp ? new Date(m.timestamp) : new Date();
+          return {
+              ...m,
+              timestamp: date,
+              timestampIST: date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+              exportedAtIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          };
+      });
+      
       // Bulk insert messages. ordered: false allows it to continue if some exist
       try {
-        const savedMessages = await Message.insertMany(validMessages, { ordered: false });
+        const savedMessages = await Message.insertMany(formattedInput, { ordered: false });
         res.status(201).json({ success: true, count: savedMessages.length, data: savedMessages });
       } catch (insertErr) {
         // If it's just duplicate key errors (code 11000), we still consider it a success
@@ -70,17 +81,23 @@ const Object = {
       }
 
       // 1. Format messages for storage
-      const formattedMessages = messages.map(m => ({
-          id: String(m.id || ''),
-          sender: String(m.sender || 'Unknown'),
-          message: String(m.message || ''),
-          timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
-          hasMedia: Boolean(m.hasMedia),
-          type: String(m.type || 'chat'),
-          chatId: String(m.chatId || chatId),
-          chatName: String(m.chatName || chatName),
-          exportedAt: new Date()
-      }));
+      const formattedMessages = messages.map(m => {
+          const date = m.timestamp ? new Date(m.timestamp) : new Date();
+          const istString = date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+          return {
+              id: String(m.id || ''),
+              sender: String(m.sender || 'Unknown'),
+              message: String(m.message || ''),
+              timestamp: date,
+              timestampIST: istString,
+              hasMedia: Boolean(m.hasMedia),
+              type: String(m.type || 'chat'),
+              chatId: String(m.chatId || chatId),
+              chatName: String(m.chatName || chatName),
+              exportedAt: new Date(),
+              exportedAtIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          };
+      });
 
       // 2. STORES IN DYNAMIC COLLECTION (Named after person/backup name)
       // This fulfills the requirement: "store on that particular person name"
@@ -96,7 +113,8 @@ const Object = {
         messageCount: messages.length,
         // We still keep the array here for legacy support/quick view, but it's now officially in the named collection too
         messages: formattedMessages,
-        exportedAt: new Date()
+        exportedAt: new Date(),
+        exportedAtIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
       });
 
       await backupIndex.save();

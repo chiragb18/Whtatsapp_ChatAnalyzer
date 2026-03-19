@@ -7,6 +7,8 @@ const messageSchema = new mongoose.Schema({
   sender: { type: String, required: true },
   message: { type: String },
   timestamp: { type: Date, required: true },
+  timestampIST: { type: String }, // DD/MM/YYYY, HH:MM:SS
+  exportedAtIST: { type: String }, // DD/MM/YYYY, HH:MM:SS
   hasMedia: { type: Boolean, default: false },
   type: { type: String }
 }, {

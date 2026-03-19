@@ -7,7 +7,8 @@ const ChatSchema = new mongoose.Schema({
   unreadCount: { type: Number, default: 0 },
   timestamp: { type: Date },
   profilePic: { type: String },
-  lastSync: { type: Date, default: Date.now }
+  lastSync: { type: Date, default: Date.now },
+  lastSyncIST: { type: String }
 });
 
 module.exports = mongoose.model('Chat', ChatSchema);

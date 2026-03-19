@@ -39,7 +39,8 @@ const whatsappController = {
           name: chat.name || chat.id.user || 'Unknown Chat',
           isGroup: chat.isGroup,
           unreadCount: chat.unreadCount,
-          timestamp: chat.timestamp ? new Date(chat.timestamp * 1000) : null
+          timestamp: chat.timestamp ? new Date(chat.timestamp * 1000) : null,
+          lastSyncIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         }));
         source = 'live';
       }
@@ -147,6 +148,8 @@ const whatsappController = {
             sender: senderName,
             message: msg.body || '',
             timestamp: new Date(msg.timestamp * 1000),
+            timestampIST: new Date(msg.timestamp * 1000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+            exportedAtIST: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
             hasMedia: msg.hasMedia || false,
             type: msg.type || 'chat'
           };

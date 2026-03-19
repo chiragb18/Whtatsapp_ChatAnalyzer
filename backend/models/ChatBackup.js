@@ -6,7 +6,8 @@ const chatBackupSchema = new mongoose.Schema({
     backupName: { type: String, required: true },
     messageCount: { type: Number, default: 0 },
     messages: [{ type: mongoose.Schema.Types.Mixed }],
-    exportedAt: { type: Date, default: Date.now }
+    exportedAt: { type: Date, default: Date.now },
+    exportedAtIST: { type: String }
 });
 
 module.exports = mongoose.model('ChatBackup', chatBackupSchema);
